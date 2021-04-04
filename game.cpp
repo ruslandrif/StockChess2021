@@ -51,6 +51,9 @@ bool check_some_board_condition(std::function<bool(square&)> check_false) {
 
 Game::Game(QWidget *parent) : QWidget(parent)
 {
+
+    b = new Board();
+
     setFixedSize(800,500);
     this->setWindowTitle("StockChess 2021");
     play_btn = new QPushButton("Play");
@@ -116,15 +119,53 @@ Game::Game(QWidget *parent) : QWidget(parent)
     random_choise->setIcon(QIcon("pics\\black_white_knight.png"));
     random_choise->hide();
 
-    connect(exit_btn,&QPushButton::clicked,qApp,&QApplication::quit);
-    connect(play_btn,&QPushButton::clicked,this,&Game::choose_color);
-    connect(settings_btn,&QPushButton::clicked,this,&Game::show_settings);
+
 
     how_to_white = write_all;
 
     hard_mode = EASY;
 
     show_menu();
+
+    connect(exit_btn,&QPushButton::clicked,qApp,&QApplication::quit);
+    connect(play_btn,&QPushButton::clicked,this,&Game::choose_color);
+    connect(settings_btn,&QPushButton::clicked,this,&Game::show_settings);
+
+    connect(white_choise,&QPushButton::clicked,this,[this](){Game::Player_color = White; play();});
+    connect(black_choise,&QPushButton::clicked,this,[this](){Game::Player_color = Black; play();});
+    connect(random_choise,&QPushButton::clicked,this,[this](){
+        if(rand() % 2 == 0) {
+            Game::Player_color = White;
+        }
+        else {
+            Game::Player_color = Black;
+        }
+        play();
+    });
+    connect(return_to_main_menu,&QPushButton::clicked,this,&Game::show_menu);
+
+    connect(return_to_main_menu,&QPushButton::clicked,this,&Game::show_menu);
+    connect(write_games_settings,static_cast<void(QComboBox::*)(const QString &)>(&QComboBox::textActivated),this,[this](const QString& s){
+        if(s == "Write all games") how_to_white = write_all;
+        if(s == "Write only last game") how_to_white = write_last;
+        if(s == "Do not write games") how_to_white = do_not_write;
+    });
+    connect(play_mode_setting,static_cast<void(QComboBox::*)(const QString &)>(&QComboBox::textActivated),this,[](const QString& s){
+        if(s == "play against yourself") Game::st = BY_MYSELF;
+        if(s == "play with computer") Game::st = STOCKFISH;
+    });
+    connect(hard_mode_setting,static_cast<void(QComboBox::*)(const QString &)>(&QComboBox::textActivated),this,[](const QString& s){
+        if(s == "Easy") hard_mode = EASY;
+        if(s == "Medium") hard_mode = MEDIUM;
+        if(s == "Hard") hard_mode = HARD;
+        if(s == "Expert") hard_mode = EXPERT;
+    });
+
+    connect(b,&Board::windowClosed,this,&Game::show_menu);
+    connect(b,&Board::mate,this,&Game::show_final_screen);
+    connect (b,&Board::draw_signal,this,&Game::show_final_screen);
+
+    connect(play_btn,&QPushButton::clicked,this,&Game::choose_color);
 
 }
 
@@ -160,18 +201,7 @@ void Game::choose_color() {
     black_choise->show();
     random_choise->show();
 
-    connect(white_choise,&QPushButton::clicked,this,[this](){Game::Player_color = White; play();});
-    connect(black_choise,&QPushButton::clicked,this,[this](){Game::Player_color = Black; play();});
-    connect(random_choise,&QPushButton::clicked,this,[this](){
-        if(rand() % 2 == 0) {
-            Game::Player_color = White;
-        }
-        else {
-            Game::Player_color = Black;
-        }
-        play();
-    });
-    connect(return_to_main_menu,&QPushButton::clicked,this,&Game::show_menu);
+
     //out << "color end\n";
 }
 
@@ -285,22 +315,7 @@ void Game::show_settings() {
     return_to_main_menu->show();
 
     setLayout(main_vb);
-    connect(return_to_main_menu,&QPushButton::clicked,this,&Game::show_menu);
-    connect(write_games_settings,static_cast<void(QComboBox::*)(const QString &)>(&QComboBox::textActivated),this,[this](const QString& s){
-        if(s == "Write all games") how_to_white = write_all;
-        if(s == "Write only last game") how_to_white = write_last;
-        if(s == "Do not write games") how_to_white = do_not_write;
-    });
-    connect(play_mode_setting,static_cast<void(QComboBox::*)(const QString &)>(&QComboBox::textActivated),this,[](const QString& s){
-        if(s == "play against yourself") Game::st = BY_MYSELF;
-        if(s == "play with computer") Game::st = STOCKFISH;
-    });
-    connect(hard_mode_setting,static_cast<void(QComboBox::*)(const QString &)>(&QComboBox::textActivated),this,[](const QString& s){
-        if(s == "Easy") hard_mode = EASY;
-        if(s == "Medium") hard_mode = MEDIUM;
-        if(s == "Hard") hard_mode = HARD;
-        if(s == "Expert") hard_mode = EXPERT;
-    });
+
 }
 
 
@@ -352,8 +367,6 @@ void Game::play() {
     play_btn->setEnabled(false);
     settings_btn->setEnabled(false);
 
-    if(b == nullptr)
-        b = new Board();
 
     b->setGeometry(100,100,730,670);
     b->setWindowTitle("Game by " + file_to_write_filename.mid(16,20));
@@ -385,9 +398,7 @@ void Game::play() {
     b->figures_start_set();
     b->show();
     //out << "play end\n";
-    connect(b,&Board::windowClosed,this,&Game::show_menu);
-    connect(b,&Board::mate,this,&Game::show_final_screen);
-    connect (b,&Board::draw_signal,this,&Game::show_final_screen);
+
 
 }
 
@@ -418,7 +429,7 @@ void Game::show_final_screen(final_states f) {
     play_btn->setText("Start new Game");
     play_btn->setEnabled(true);
 
-    connect(play_btn,&QPushButton::clicked,this,&Game::choose_color);
+
 
 }
 
