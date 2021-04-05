@@ -6,6 +6,7 @@
 
 state Game::st = STOCKFISH;
 std::array<std::array<square,8>,8> Game::board = {
+
 };
 
 hard_modes Game::hard_mode = EASY;
@@ -52,31 +53,32 @@ bool check_some_board_condition(std::function<bool(square&)> check_false) {
 Game::Game(QWidget *parent) : QWidget(parent)
 {
 
-    b = new Board();
+    b = std::make_unique<Board>();
 
     setFixedSize(800,500);
     this->setWindowTitle("StockChess 2021");
-    play_btn = new QPushButton("Play");
+    play_btn = std::make_unique<QPushButton>("Play");
     play_btn->setIcon(QIcon("pics\\play_icon.jpg"));
 
 
-    settings_btn = new QPushButton("Settings");
+    settings_btn = std::make_unique<QPushButton>("Settings");
     settings_btn->setIcon(QIcon("pics\\setting_icon.png"));
-    exit_btn = new QPushButton("Exit");
+
+    exit_btn = std::make_unique<QPushButton>("Exit");
     exit_btn->setIcon(QIcon("pics\\exit_icon.png"));
 
-    return_to_main_menu = new QPushButton("Return to menu");
+    return_to_main_menu = std::make_unique<QPushButton>("Return to menu");
     return_to_main_menu->setIcon(QIcon("pics\\menu_icon.png"));
 
-    main_vb = new QVBoxLayout(this);
+    main_vb = std::make_unique<QVBoxLayout>(this);
 
 
 
-    write_games_settings = new QComboBox(this);
+    write_games_settings = std::make_unique<QComboBox>(this);
 
-    play_mode_setting = new QComboBox(this);
+    play_mode_setting = std::make_unique<QComboBox>(this);
 
-    hard_mode_setting = new QComboBox(this);
+    hard_mode_setting = std::make_unique<QComboBox>(this);
 
     QStringList lst = {"Easy","Medium","Hard","Expert"};
     hard_mode_setting->addItems(lst);
@@ -90,32 +92,32 @@ Game::Game(QWidget *parent) : QWidget(parent)
     play_mode_setting->addItems(lst);
     play_mode_setting->hide();
 
-    final_lbl = new QLabel("",this);
+    final_lbl = std::make_unique<QLabel>("",this);
     final_lbl->hide();
 
-    write_games_lbl = new QLabel("How do you like to write your games",this);
+    write_games_lbl = std::make_unique<QLabel>("How do you like to write your games",this);
     write_games_lbl->setAlignment(Qt::AlignCenter);
-    play_mode_lbl = new QLabel("Play with chess engine or with yourself",this);
+    play_mode_lbl = std::make_unique<QLabel>("Play with chess engine or with yourself",this);
     play_mode_lbl->setAlignment(Qt::AlignCenter);
-    hard_mode_lbl = new QLabel("Hard mode",this);
+    hard_mode_lbl = std::make_unique<QLabel>("Hard mode",this);
     hard_mode_lbl->setAlignment(Qt::AlignCenter);
     write_games_lbl->hide();
     play_mode_lbl->hide();
     hard_mode_lbl->hide();
 
-    color_choose_lbl = new QLabel(this);
+    color_choose_lbl = std::make_unique<QLabel>(this);
     color_choose_lbl->setText("Choose a color you want to play");
     color_choose_lbl->hide();
 
-    white_choise = new QPushButton("White");
+    white_choise = std::make_unique<QPushButton>("White");
     white_choise->setIcon(QIcon("pics\\figures\\wN.png"));
     white_choise->hide();
 
-    black_choise = new QPushButton("Black");
+    black_choise = std::make_unique<QPushButton>("Black");
     black_choise->setIcon(QIcon("pics\\figures\\bN.png"));
     black_choise->hide();
 
-    random_choise = new QPushButton("Random color");
+    random_choise = std::make_unique<QPushButton>("Random color");
     random_choise->setIcon(QIcon("pics\\black_white_knight.png"));
     random_choise->hide();
 
@@ -127,13 +129,13 @@ Game::Game(QWidget *parent) : QWidget(parent)
 
     show_menu();
 
-    connect(exit_btn,&QPushButton::clicked,qApp,&QApplication::quit);
-    connect(play_btn,&QPushButton::clicked,this,&Game::choose_color);
-    connect(settings_btn,&QPushButton::clicked,this,&Game::show_settings);
+    connect(exit_btn.get(),&QPushButton::clicked,qApp,&QApplication::quit);
+    connect(play_btn.get(),&QPushButton::clicked,this,&Game::choose_color);
+    connect(settings_btn.get(),&QPushButton::clicked,this,&Game::show_settings);
 
-    connect(white_choise,&QPushButton::clicked,this,[this](){Game::Player_color = White; play();});
-    connect(black_choise,&QPushButton::clicked,this,[this](){Game::Player_color = Black; play();});
-    connect(random_choise,&QPushButton::clicked,this,[this](){
+    connect(white_choise.get(),&QPushButton::clicked,this,[this](){Game::Player_color = White; play();});
+    connect(black_choise.get(),&QPushButton::clicked,this,[this](){Game::Player_color = Black; play();});
+    connect(random_choise.get(),&QPushButton::clicked,this,[this](){
         if(rand() % 2 == 0) {
             Game::Player_color = White;
         }
@@ -142,41 +144,34 @@ Game::Game(QWidget *parent) : QWidget(parent)
         }
         play();
     });
-    connect(return_to_main_menu,&QPushButton::clicked,this,&Game::show_menu);
+    connect(return_to_main_menu.get(),&QPushButton::clicked,this,&Game::show_menu);
 
-    connect(return_to_main_menu,&QPushButton::clicked,this,&Game::show_menu);
-    connect(write_games_settings,static_cast<void(QComboBox::*)(const QString &)>(&QComboBox::textActivated),this,[this](const QString& s){
+    connect(write_games_settings.get(),static_cast<void(QComboBox::*)(const QString &)>(&QComboBox::textActivated),this,[this](const QString& s){
         if(s == "Write all games") how_to_white = write_all;
         if(s == "Write only last game") how_to_white = write_last;
         if(s == "Do not write games") how_to_white = do_not_write;
     });
-    connect(play_mode_setting,static_cast<void(QComboBox::*)(const QString &)>(&QComboBox::textActivated),this,[](const QString& s){
+    connect(play_mode_setting.get(),static_cast<void(QComboBox::*)(const QString &)>(&QComboBox::textActivated),this,[](const QString& s){
         if(s == "play against yourself") Game::st = BY_MYSELF;
         if(s == "play with computer") Game::st = STOCKFISH;
     });
-    connect(hard_mode_setting,static_cast<void(QComboBox::*)(const QString &)>(&QComboBox::textActivated),this,[](const QString& s){
+    connect(hard_mode_setting.get(),static_cast<void(QComboBox::*)(const QString &)>(&QComboBox::textActivated),this,[](const QString& s){
         if(s == "Easy") hard_mode = EASY;
         if(s == "Medium") hard_mode = MEDIUM;
         if(s == "Hard") hard_mode = HARD;
         if(s == "Expert") hard_mode = EXPERT;
     });
 
-    connect(b,&Board::windowClosed,this,&Game::show_menu);
-    connect(b,&Board::mate,this,&Game::show_final_screen);
-    connect (b,&Board::draw_signal,this,&Game::show_final_screen);
+    connect(b.get(),&Board::windowClosed,this,&Game::show_menu);
+    connect(b.get(),&Board::mate,this,&Game::show_final_screen);
+    connect (b.get(),&Board::draw_signal,this,&Game::show_final_screen);
 
-    connect(play_btn,&QPushButton::clicked,this,&Game::choose_color);
+    connect(play_btn.get(),&QPushButton::clicked,this,&Game::choose_color);
 
 }
 
 Game::~Game() {
-    delete play_btn;
-    delete exit_btn;
-    delete settings_btn;
-    delete final_lbl;
-    delete write_games_settings;
-    delete play_mode_setting;
-    delete b;
+
 }
 
 
@@ -184,17 +179,17 @@ void Game::choose_color() {
 
     //out << "color begin\n";
     srand(time(NULL));
-    main_vb->removeWidget(play_btn);
-    main_vb->removeWidget(settings_btn);
-    main_vb->removeWidget(final_lbl);
+    main_vb->removeWidget(play_btn.get());
+    main_vb->removeWidget(settings_btn.get());
+    main_vb->removeWidget(final_lbl.get());
     final_lbl->hide();
     play_btn->hide();
     settings_btn->hide();
-    main_vb->insertWidget(0,white_choise);
-    main_vb->insertWidget(0,black_choise);
-    main_vb->insertWidget(0,random_choise);
-    main_vb->insertWidget(0,color_choose_lbl,1,Qt::AlignCenter);
-    main_vb->insertWidget(4,return_to_main_menu);
+    main_vb->insertWidget(0,white_choise.get());
+    main_vb->insertWidget(0,black_choise.get());
+    main_vb->insertWidget(0,random_choise.get());
+    main_vb->insertWidget(0,color_choose_lbl.get(),1,Qt::AlignCenter);
+    main_vb->insertWidget(4,return_to_main_menu.get());
     return_to_main_menu->show();
     color_choose_lbl->show();
     white_choise->show();
@@ -217,15 +212,15 @@ void Game::show_menu() {
 
     return_to_main_menu->hide();
 
-    main_vb->removeWidget(hard_mode_lbl);
-    main_vb->removeWidget(play_mode_lbl);
-    main_vb->removeWidget(write_games_lbl);
-    main_vb->removeWidget(black_choise);
-    main_vb->removeWidget(white_choise);
-    main_vb->removeWidget(random_choise);
-    main_vb->removeWidget(return_to_main_menu);
-    main_vb->removeWidget(color_choose_lbl);
-    main_vb->removeWidget(final_lbl);
+    main_vb->removeWidget(hard_mode_lbl.get());
+    main_vb->removeWidget(play_mode_lbl.get());
+    main_vb->removeWidget(write_games_lbl.get());
+    main_vb->removeWidget(black_choise.get());
+    main_vb->removeWidget(white_choise.get());
+    main_vb->removeWidget(random_choise.get());
+    main_vb->removeWidget(return_to_main_menu.get());
+    main_vb->removeWidget(color_choose_lbl.get());
+    main_vb->removeWidget(final_lbl.get());
 
     hard_mode_lbl->hide();
     play_mode_lbl->hide();
@@ -237,13 +232,13 @@ void Game::show_menu() {
     color_choose_lbl->hide();
     final_lbl->hide();
 
-    main_vb->removeWidget(write_games_settings);
+    main_vb->removeWidget(write_games_settings.get());
     write_games_settings->hide();
-    main_vb->removeWidget(return_to_main_menu);
-    main_vb->removeWidget(play_mode_setting);
+    main_vb->removeWidget(return_to_main_menu.get());
+    main_vb->removeWidget(play_mode_setting.get());
     play_mode_setting->hide();
 
-    main_vb->removeWidget(hard_mode_setting);
+    main_vb->removeWidget(hard_mode_setting.get());
     hard_mode_setting->hide();
 
 
@@ -258,11 +253,11 @@ void Game::show_menu() {
     exit_btn->show();
 
     vb->setSpacing(5);
-    vb->addWidget(play_btn,2);
-    vb->addWidget(settings_btn,2);
-    vb->addWidget(exit_btn,2);
+    vb->addWidget(play_btn.get(),2);
+    vb->addWidget(settings_btn.get(),2);
+    vb->addWidget(exit_btn.get(),2);
     main_vb->addLayout(vb,1);
-    setLayout(main_vb);
+    setLayout(main_vb.get());
 
 
     //out << "menu end\n";
@@ -276,26 +271,26 @@ void Game::show_settings() {
 
 
 
-    main_vb->removeWidget(play_btn);
-    main_vb->removeWidget(settings_btn);
-    main_vb->removeWidget(final_lbl);
+    main_vb->removeWidget(play_btn.get());
+    main_vb->removeWidget(settings_btn.get());
+    main_vb->removeWidget(final_lbl.get());
     final_lbl->hide();
 
-    main_vb->insertWidget(0,return_to_main_menu);
+    main_vb->insertWidget(0,return_to_main_menu.get());
 
 
     QHBoxLayout *write_l = new QHBoxLayout;
     QHBoxLayout *play_mode_l = new QHBoxLayout;
     QHBoxLayout *hard_mode_l = new QHBoxLayout;
 
-    write_l->addWidget(write_games_lbl);
-    write_l->addWidget(write_games_settings);
+    write_l->addWidget(write_games_lbl.get());
+    write_l->addWidget(write_games_settings.get());
 
-    play_mode_l->addWidget(play_mode_lbl);
-    play_mode_l->addWidget(play_mode_setting);
+    play_mode_l->addWidget(play_mode_lbl.get());
+    play_mode_l->addWidget(play_mode_setting.get());
 
-    hard_mode_l->addWidget(hard_mode_lbl);
-    hard_mode_l->addWidget(hard_mode_setting);
+    hard_mode_l->addWidget(hard_mode_lbl.get());
+    hard_mode_l->addWidget(hard_mode_setting.get());
 
     main_vb->insertLayout(0,hard_mode_l);
     main_vb->insertLayout(0,play_mode_l);
@@ -314,7 +309,7 @@ void Game::show_settings() {
 
     return_to_main_menu->show();
 
-    setLayout(main_vb);
+    setLayout(main_vb.get());
 
 }
 
@@ -324,16 +319,16 @@ void Game::play() {
     //out << "play begin\n";
     count_move = 1;
 
-    main_vb->removeWidget(white_choise);
-    main_vb->removeWidget(black_choise);
-    main_vb->removeWidget(random_choise);
+    main_vb->removeWidget(white_choise.get());
+    main_vb->removeWidget(black_choise.get());
+    main_vb->removeWidget(random_choise.get());
     white_choise->hide();
     black_choise->hide();
     random_choise->hide();
     color_choose_lbl->hide();                  //remove menu buttons from screen
 
-    main_vb->insertWidget(0,settings_btn);
-    main_vb->insertWidget(0,play_btn);
+    main_vb->insertWidget(0,settings_btn.get());
+    main_vb->insertWidget(0,play_btn.get());
     play_btn->show();
     settings_btn->show();
 
@@ -347,7 +342,7 @@ void Game::play() {
     QFile file_to_write;
 
     traverse_board([](square& s){
-        s = {nullptr,0,0};
+        s = {std::shared_ptr<figure>(nullptr),0,0};
     });
 
     //set the filename of the file
@@ -423,7 +418,7 @@ void Game::show_final_screen(final_states f) {
 
     final_lbl->setAlignment(Qt::AlignCenter);
 
-    main_vb->insertWidget(0,final_lbl);
+    main_vb->insertWidget(0,final_lbl.get());
     final_lbl->show();
 
     play_btn->setText("Start new Game");

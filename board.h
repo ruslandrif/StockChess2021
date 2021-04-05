@@ -5,11 +5,12 @@
 #include <QPainter>
 #include <QLabel>
 #include <QFile>
+#include <QDebug>
 #include <QProcess>
+#include <QPushButton>
 #include <exception>
 #include <thread>
 #include <vector>
-#include <QPushButton>
 
 class figure;
 #include "piece.h"
@@ -20,11 +21,8 @@ class figure;
 #include "knight.h"
 #include "common_used.h"
 
-
-
 void mark_all();
 void unmark_all();
-
 
 struct single_move {
 
@@ -34,20 +32,17 @@ private:
     position from;
     position where;
 
-    bool taking{false};
+    bool taking{ false };
 public:
 
-
-    single_move(figure_type fig,position f,position w,bool t = false);
+    single_move(figure_type fig, position f, position w, bool t = false);
 
     position get_from();
     position get_where();
 
-
-    std::string to_str(bool isCheck = false,bool is_mate = false,bool isBlack = false,bool transform = false,char transform_first_symbol = ' ') const; //convert move to string
+    std::string to_str(bool isCheck = false, bool is_mate = false, bool isBlack = false, bool transform = false, char transform_first_symbol = ' ') const; //convert move to string
 
     std::string to_string_for_stockfish(char transform = ' ');
-
 
 };
 
@@ -57,32 +52,27 @@ struct full_move {
 };
 
 square& at(position p);                    //returns board squares, that represent the given position
-square& at(columns c,std::size_t row);     // because the board is an array, and there we need to calculate indices correctly
-
-
-
-
-
+square& at(columns c, std::size_t row);     // because the board is an array, and there we need to calculate indices correctly
 
 class Board : public QWidget
 {
-Q_OBJECT
+    Q_OBJECT
 public:
 
-    Board(QWidget *parent = nullptr);
+    Board(QWidget* parent = nullptr);
     virtual ~Board();
 
     void draw();
     void figures_start_set();
 
     int get_square_size();
-    figure* get_last_moved();
+    const figure*  get_last_moved();
     QString get_write_filename();
 
-    void closeEvent(QCloseEvent *e) override;
-    void paintEvent(QPaintEvent *e) override;
-    void mousePressEvent(QMouseEvent *e) override;  //event handlers
-    void mouseReleaseEvent(QMouseEvent *e) override;
+    void closeEvent(QCloseEvent* e) override;
+    void paintEvent(QPaintEvent* e) override;
+    void mousePressEvent(QMouseEvent* e) override;  //event handlers
+    void mouseReleaseEvent(QMouseEvent* e) override;
 
     single_move convert_stockfish_move_to_single_move(std::string stockstr);
 
@@ -99,9 +89,27 @@ public:
     void choose_figure_to_transform(position where); //function that shows a window where player can choose figure for piece transformation
 
     void set_write_filename(QString s);
-    void make_move(position handled,position release_pos,bool stockfish,char transform_figure);  //function that try to make move
-    void write_move(const single_move& s,bool is_check = false,bool is_mate = false,bool Black = false,bool transform = false,char transform_first_symbol = ' '); //write move to file
+    void make_move(position handled, position release_pos, bool stockfish, char transform_figure);  //function that try to make move
+    void write_move(const single_move& s, bool is_check = false, bool is_mate = false, bool Black = false, bool transform = false, char transform_first_symbol = ' '); //write move to file
 
+
+    std::shared_ptr<king> white_king{};
+    std::shared_ptr<king> black_king{};
+
+    std::shared_ptr<queen>  queen_black{};
+    std::shared_ptr<queen>  queen_white{};
+
+    std::vector<std::shared_ptr<rook> > rooks_black{ 2 };
+    std::vector<std::shared_ptr<rook> > rooks_white{ 2 };
+
+    std::vector<std::shared_ptr<knight> > knights_black{ 2 };
+    std::vector<std::shared_ptr<knight> > knights_white{ 2 };
+
+    std::vector<std::shared_ptr<bishop> > bishops_black{ 2 };
+    std::vector<std::shared_ptr<bishop> > bishops_white{ 2 };
+
+    std::vector<std::shared_ptr<piece> > pieces_black{ 8 };
+    std::vector<std::shared_ptr<piece> > pieces_white{ 8 };
 
 signals:
     void windowClosed();
@@ -115,58 +123,42 @@ private:
     bool only_light_figures_left();  //some booleans
     bool stalemate();
 
-    bool was_pressed{false};
+    bool was_pressed{ false };
 
     square& get_king(colors c); //return the square with the king of the color c
 
-    QWidget *figure_choose{nullptr};
+    QWidget* figure_choose{ nullptr };
     position where_to_transform;
 
     void transform();  //function to transform piece to other figure
 
-    QProcess *stockfish_process{nullptr}; //process to interract with chess engine
+    QProcess* stockfish_process{ nullptr }; //process to interract with chess engine
 
-    QPushButton *give_up{nullptr};  //give up button
+    std::unique_ptr<QPushButton> give_up{ nullptr };  //give up button
 
-    QString filename_to_write{""};   //in which file program will write game
+    QString filename_to_write{ "" };   //in which file program will write game
 
 
     std::size_t square_size; //geometrical size of the square on the board
 
     position handled;//position where player handle mouse now
 
-    std::vector<figure*> odd_figures{};
+    std::vector<std::shared_ptr<figure>> odd_figures{};
 
     //start figures
-    king *white_king{nullptr};
-    king *black_king{nullptr};
 
-    figure* queen_black{nullptr};
-    figure* queen_white{nullptr};
 
-    std::vector<figure*> rooks_black{2,nullptr};
-    std::vector<figure*> rooks_white{2,nullptr};
+    std::vector<std::unique_ptr<QLabel> > letters{ 8 };
+    std::vector<std::unique_ptr<QLabel> > digits{ 8 };
 
-    std::vector<figure*> knights_black{2,nullptr};
-    std::vector<figure*> knights_white{2,nullptr};
-
-    std::vector<figure*> bishops_black{2,nullptr};
-    std::vector<figure*> bishops_white{2,nullptr};
-
-    std::vector<figure*> pieces_black{8,nullptr};
-    std::vector<figure*> pieces_white{8,nullptr};
-
-    std::vector<QLabel*> letters{8,nullptr};
-    std::vector<QLabel*> digits{8,nullptr};
-
-    std::vector<QLabel*> possible_moves_signs{};
+    std::vector<std::unique_ptr<QLabel>> possible_moves_signs{};
 
     //this functions create or clear squares on the board, which show where player can move
     void create_possible_moves_signs(std::vector<position>& positions);
     void clear_possible_moves_signs();
 
     //show in what figure player wants to transform piece
-    figure_type transform_figure{Queen};
+    figure_type transform_figure{ Queen };
 };
 
 #endif // BOARD_H

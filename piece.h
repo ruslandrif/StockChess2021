@@ -17,7 +17,7 @@ public:
 
     std::vector<position> possible_squares() override;
 
-
+    ~piece() override {};
 };
 
 #endif // PIECE_H

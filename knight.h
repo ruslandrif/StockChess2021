@@ -14,6 +14,8 @@ public:
 
 
     std::vector<position> possible_squares() override;
+
+    ~knight() override {};
 };
 
 #endif // KNIGHT_H

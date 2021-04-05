@@ -69,5 +69,9 @@ void figure::set_pos(position newpos)
     p.row = newpos.row;
 }
 
+figure::~figure() {
+
+}
+
 
 

@@ -112,6 +112,8 @@ public:
     void set_pos(position newpos);
 
     void null_count_moves() {count_moves = 0;}
+
+    virtual ~figure();
 protected:
     const int cost;
     const figure_weight weight;

@@ -1,6 +1,7 @@
 
 #ifndef COMMON_USED_H
 #define COMMON_USED_H
+#include <memory>
 #define EMPTY_SQUARE nullptr
 #define MARK_ATTACKING_SQUARES 1
 #define UNMARK_ATTACKING_SQUARES -1
@@ -29,10 +30,10 @@ struct square {  //this structure holds info about square on the board
 
     }
 
-    square(figure *f,int white,int black) : _figure(f),attacking_white_figures(white),attacking_black_figures(black) {
+    square( std::shared_ptr<figure> f,int white,int black) : _figure(f.get()),attacking_white_figures(white),attacking_black_figures(black) {
 
     }
-    figure *_figure;
+    figure* _figure;
     int attacking_white_figures;
     int attacking_black_figures;
     colors square_color{White};

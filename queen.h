@@ -12,6 +12,8 @@ public:
     void touch_attacking_squares(int how) override;
 
     std::vector<position> possible_squares() override;
+
+    ~queen() override {}
 };
 
 #endif // QUEEN_H

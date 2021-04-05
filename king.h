@@ -18,8 +18,9 @@ public:
     std::vector<position> possible_squares() override;
 
     void set_checked() {was_checked = true;}
+
+    ~king() override {};
 private:
     bool was_checked {false};  //check if the king was attacked in current game
 };
-
 #endif // KING_H

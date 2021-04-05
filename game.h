@@ -57,28 +57,27 @@ private:
     how_to_write_games how_to_white;
 
 
-    Board *b{nullptr};
+    std::unique_ptr<Board> b;
 
-    QVBoxLayout *main_vb{nullptr};
+    std::unique_ptr<QVBoxLayout> main_vb{nullptr};
 
-    QPushButton *play_btn{nullptr};
-    QPushButton *settings_btn{nullptr};           //buttons for all part of the game
-    QPushButton *exit_btn{nullptr};
-    QPushButton *return_to_main_menu{nullptr};
-    QPushButton *white_choise{nullptr};
-    QPushButton *black_choise{nullptr};
-    QPushButton *random_choise{nullptr};
+    std::unique_ptr<QPushButton> play_btn;
+    std::unique_ptr<QPushButton> settings_btn;           //buttons for all part of the game
+    std::unique_ptr<QPushButton> exit_btn;
+    std::unique_ptr<QPushButton> return_to_main_menu;
+    std::unique_ptr<QPushButton> white_choise;
+    std::unique_ptr<QPushButton> black_choise;
+    std::unique_ptr<QPushButton> random_choise;
 
-    QLabel *final_lbl{nullptr};
-    QLabel *color_choose_lbl{nullptr};
-    QLabel *hard_mode_lbl{nullptr};
-    QLabel *play_mode_lbl{nullptr};
-    QLabel *write_games_lbl{nullptr};
+    std::unique_ptr<QLabel> final_lbl;
+    std::unique_ptr<QLabel> color_choose_lbl;
+    std::unique_ptr<QLabel> hard_mode_lbl;
+    std::unique_ptr<QLabel> play_mode_lbl;
+    std::unique_ptr<QLabel> write_games_lbl;
 
-    QComboBox *write_games_settings{nullptr};
-    QComboBox *play_mode_setting{nullptr};
-    QComboBox *hard_mode_setting{nullptr};
-
+    std::unique_ptr<QComboBox> write_games_settings;
+    std::unique_ptr<QComboBox> play_mode_setting;
+    std::unique_ptr<QComboBox> hard_mode_setting;
 
 };
 
