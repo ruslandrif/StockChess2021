@@ -158,7 +158,7 @@ private:
     void clear_possible_moves_signs();
 
     //show in what figure player wants to transform piece
-    figure_type transform_figure{ Queen };
+    figure_type transform_figure{ figure_type::Queen };
 };
 
 #endif // BOARD_H

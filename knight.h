@@ -6,7 +6,7 @@
 class knight : public figure
 {
 public:
-    knight(std::string text,QWidget *parent = nullptr,int cost = 3,figure_weight weight = LIGHT);
+    knight(colors color,QWidget *parent = nullptr,int cost = 3,figure_weight weight = figure_weight::LIGHT);
 
     figure_type name() override {return figure_type::Knight;}
 

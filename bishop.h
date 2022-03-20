@@ -9,7 +9,7 @@ This class describes bishop behaviour
 class bishop : public figure
 {
 public:
-    bishop(std::string text,QWidget *parent = nullptr,int cost = 3,figure_weight weight = LIGHT);
+    bishop(colors color,QWidget *parent = nullptr,int cost = 3,figure_weight weight = figure_weight::LIGHT);
     figure_type name() override {return figure_type::Bishop;}
     void touch_attacking_squares(int how) override;
 

@@ -32,6 +32,11 @@ HEADERS += \
     queen.h \
     rook.h
 
+RESOURCES += \
+    $$files(pics/figures/*.png) \
+    $$files(pics/*.jpg) \
+    $$files(pics/*.png) \
+
 FORMS +=
 
 # Default rules for deployment.

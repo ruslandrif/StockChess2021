@@ -19,7 +19,6 @@
 #include <QComboBox>
 #include <ctime>
 #include "common_used.h"
-
 class Board;
 class figure;
 
@@ -57,7 +56,7 @@ private:
     how_to_write_games how_to_white;
 
 
-    std::unique_ptr<Board> b;
+    Board* b{ nullptr };
 
     std::unique_ptr<QVBoxLayout> main_vb{nullptr};
 

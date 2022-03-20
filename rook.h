@@ -6,7 +6,7 @@
 class rook : public figure
 {
 public:
-    rook(std::string text,QWidget *parent = nullptr,int cost = 5,figure_weight weight = HEAVY);
+    rook(colors color,QWidget *parent = nullptr,int cost = 5,figure_weight weight = figure_weight::HEAVY);
     figure_type name() override{return figure_type::Rook;}
     void touch_attacking_squares(int how) override;
 

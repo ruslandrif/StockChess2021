@@ -1,19 +1,20 @@
-#include "game.h"
-#include "figure.h"
 #include "board.h"
+#include "game.h"
+#include <QWidget>
+#include "figure.h"
 
 #include <QTextStream>
 
-state Game::st = STOCKFISH;
+state Game::st = state::STOCKFISH;
 std::array<std::array<square,8>,8> Game::board = {
 
 };
 
-hard_modes Game::hard_mode = EASY;
+hard_modes Game::hard_mode = hard_modes::EASY;
 
-colors Game::now_move = White;
+colors Game::now_move = colors::White;
 
-colors Game::Player_color = White;
+colors Game::Player_color = colors::White;
 
 std::string Game::string_for_stockfish = "position startpos moves ";
 
@@ -53,22 +54,22 @@ bool check_some_board_condition(std::function<bool(square&)> check_false) {
 Game::Game(QWidget *parent) : QWidget(parent)
 {
 
-    b = std::make_unique<Board>();
+    b = new Board();
 
     setFixedSize(800,500);
     this->setWindowTitle("StockChess 2021");
     play_btn = std::make_unique<QPushButton>("Play");
-    play_btn->setIcon(QIcon("pics\\play_icon.jpg"));
+    play_btn->setIcon(QIcon(":\\pics\\play_icon.jpg"));
 
 
     settings_btn = std::make_unique<QPushButton>("Settings");
-    settings_btn->setIcon(QIcon("pics\\setting_icon.png"));
+    settings_btn->setIcon(QIcon(":\\pics\\setting_icon.png"));
 
     exit_btn = std::make_unique<QPushButton>("Exit");
-    exit_btn->setIcon(QIcon("pics\\exit_icon.png"));
+    exit_btn->setIcon(QIcon(":\\pics\\exit_icon.png"));
 
     return_to_main_menu = std::make_unique<QPushButton>("Return to menu");
-    return_to_main_menu->setIcon(QIcon("pics\\menu_icon.png"));
+    return_to_main_menu->setIcon(QIcon(":\\pics\\menu_icon.png"));
 
     main_vb = std::make_unique<QVBoxLayout>(this);
 
@@ -110,22 +111,22 @@ Game::Game(QWidget *parent) : QWidget(parent)
     color_choose_lbl->hide();
 
     white_choise = std::make_unique<QPushButton>("White");
-    white_choise->setIcon(QIcon("pics\\figures\\wN.png"));
+    white_choise->setIcon(QIcon(":\\pics\\figures\\wN.png"));
     white_choise->hide();
 
     black_choise = std::make_unique<QPushButton>("Black");
-    black_choise->setIcon(QIcon("pics\\figures\\bN.png"));
+    black_choise->setIcon(QIcon(":\\pics\\figures\\bN.png"));
     black_choise->hide();
 
     random_choise = std::make_unique<QPushButton>("Random color");
-    random_choise->setIcon(QIcon("pics\\black_white_knight.png"));
+    random_choise->setIcon(QIcon(":\\pics\\black_white_knight.png"));
     random_choise->hide();
 
 
 
-    how_to_white = write_all;
+    how_to_white = how_to_write_games::write_all;
 
-    hard_mode = EASY;
+    hard_mode = hard_modes::EASY;
 
     show_menu();
 
@@ -133,38 +134,38 @@ Game::Game(QWidget *parent) : QWidget(parent)
     connect(play_btn.get(),&QPushButton::clicked,this,&Game::choose_color);
     connect(settings_btn.get(),&QPushButton::clicked,this,&Game::show_settings);
 
-    connect(white_choise.get(),&QPushButton::clicked,this,[this](){Game::Player_color = White; play();});
-    connect(black_choise.get(),&QPushButton::clicked,this,[this](){Game::Player_color = Black; play();});
+    connect(white_choise.get(),&QPushButton::clicked,this,[this](){Game::Player_color = colors::White; play();});
+    connect(black_choise.get(),&QPushButton::clicked,this,[this](){Game::Player_color = colors::Black; play();});
     connect(random_choise.get(),&QPushButton::clicked,this,[this](){
         if(rand() % 2 == 0) {
-            Game::Player_color = White;
+            Game::Player_color = colors::White;
         }
         else {
-            Game::Player_color = Black;
+            Game::Player_color = colors::Black;
         }
         play();
     });
     connect(return_to_main_menu.get(),&QPushButton::clicked,this,&Game::show_menu);
 
     connect(write_games_settings.get(),static_cast<void(QComboBox::*)(const QString &)>(&QComboBox::textActivated),this,[this](const QString& s){
-        if(s == "Write all games") how_to_white = write_all;
-        if(s == "Write only last game") how_to_white = write_last;
-        if(s == "Do not write games") how_to_white = do_not_write;
+        if(s == "Write all games") how_to_white = how_to_write_games::write_all;
+        if(s == "Write only last game") how_to_white = how_to_write_games::write_last;
+        if(s == "Do not write games") how_to_white = how_to_write_games::do_not_write;
     });
     connect(play_mode_setting.get(),static_cast<void(QComboBox::*)(const QString &)>(&QComboBox::textActivated),this,[](const QString& s){
-        if(s == "play against yourself") Game::st = BY_MYSELF;
-        if(s == "play with computer") Game::st = STOCKFISH;
+        if(s == "play against yourself") Game::st = state::BY_MYSELF;
+        if(s == "play with computer") Game::st = state::STOCKFISH;
     });
     connect(hard_mode_setting.get(),static_cast<void(QComboBox::*)(const QString &)>(&QComboBox::textActivated),this,[](const QString& s){
-        if(s == "Easy") hard_mode = EASY;
-        if(s == "Medium") hard_mode = MEDIUM;
-        if(s == "Hard") hard_mode = HARD;
-        if(s == "Expert") hard_mode = EXPERT;
+        if(s == "Easy") hard_mode = hard_modes::EASY;
+        if(s == "Medium") hard_mode = hard_modes::MEDIUM;
+        if(s == "Hard") hard_mode = hard_modes::HARD;
+        if(s == "Expert") hard_mode = hard_modes::EXPERT;
     });
 
-    connect(b.get(),&Board::windowClosed,this,&Game::show_menu);
-    connect(b.get(),&Board::mate,this,&Game::show_final_screen);
-    connect (b.get(),&Board::draw_signal,this,&Game::show_final_screen);
+    connect(b,&Board::windowClosed,this,&Game::show_menu);
+    connect(b,&Board::mate,this,&Game::show_final_screen);
+    connect (b,&Board::draw_signal,this,&Game::show_final_screen);
 
     connect(play_btn.get(),&QPushButton::clicked,this,&Game::choose_color);
 
@@ -357,23 +358,23 @@ void Game::play() {
     if(final_lbl) final_lbl->hide();
     if(write_games_settings) write_games_settings->hide();
 
-    Game::now_move = White;
+    Game::now_move = colors::White;
     Board::last_move = nullptr;
     play_btn->setEnabled(false);
     settings_btn->setEnabled(false);
 
-
+    //this->b->setGeometry(100)
     b->setGeometry(100,100,730,670);
     b->setWindowTitle("Game by " + file_to_write_filename.mid(16,20));
 
 
-    if(how_to_white == write_all) { //if player wants to write all games
+    if(how_to_white == how_to_write_games::write_all) { //if player wants to write all games
         games_directory.mkdir(games_directory_name);
         games_directory.setPath(games_directory_name);
 
         b->set_write_filename(file_to_write_filename);
     }
-    else if(how_to_white == write_last) { //if player wants to write only last game
+    else if(how_to_white == how_to_write_games::write_last) { //if player wants to write only last game
         games_directory.setPath(games_directory_name);
         if(games_directory.exists()) games_directory.removeRecursively();
 
@@ -412,7 +413,7 @@ void Game::show_final_screen(final_states f) {
 
 
     if(f == win) {
-        final_lbl->setText((Game::now_move == White) ? "Black win!" : "White win");
+        final_lbl->setText((Game::now_move == colors::White) ? "Black win!" : "White win");
     }
     else final_lbl->setText("Draw!");
 

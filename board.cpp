@@ -23,19 +23,19 @@ std::string single_move::to_str(bool isCheck, bool is_mate, bool isBlack, bool t
 
     if (!transform)
         switch (name) {
-        case Rook:
+        case figure_type::Rook:
             result.push_back('R');
             break;
-        case Knight:
+        case figure_type::Knight:
             result.push_back('N');
             break;
-        case Bishop:
+        case figure_type::Bishop:
             result.push_back('B');
             break;
-        case Queen:
+        case figure_type::Queen:
             result.push_back('Q');
             break;
-        case King:
+        case figure_type::King:
             result.push_back('K');
             break;
         default:
@@ -52,7 +52,7 @@ std::string single_move::to_str(bool isCheck, bool is_mate, bool isBlack, bool t
 
     }
     else {
-        if (name == Piece && taking) {   //make a short move string like ef or gf
+        if (name == figure_type::Piece && taking) {   //make a short move string like ef or gf
             result.push_back(from.to_str()[0]);
             result.push_back(where.to_str()[0]);
 
@@ -93,7 +93,7 @@ Board::Board(QWidget* parent) : QWidget(parent)
     square_size = (this->height() - 30) / 8;
 
     give_up = std::make_unique<QPushButton>(this);                    //setting the give-up button
-    give_up->setIcon(QIcon("pics\\give_up_icon.png"));
+    give_up->setIcon(QIcon(":\\pics\\give_up_icon.png"));
     give_up->setIconSize(QSize(square_size, square_size));
 
 
@@ -101,9 +101,9 @@ Board::Board(QWidget* parent) : QWidget(parent)
     char c('A');
 
     for (int i = 0; i < 8; ++i) {
-        pieces_black[i] = std::make_shared<piece>("bP", this);         //set pieces
+        pieces_black[i] = std::make_shared<piece>(colors::Black, this);         //set pieces
         pieces_black[i]->set_pos(position(columns(i + 1), 7));
-        pieces_white[i] = std::make_shared<piece>("wP", this);
+        pieces_white[i] = std::make_shared<piece>(colors::White, this);
         pieces_white[i]->set_pos(position(columns(i + 1), 2));
 
         QString s;
@@ -117,46 +117,46 @@ Board::Board(QWidget* parent) : QWidget(parent)
         digits[i]->setTextFormat(Qt::PlainText); //create a digit label
 
     }
-    white_king = std::make_shared<king>("wK", this);
-    black_king = std::make_shared<king>("bK", this);        //set kings
-    white_king->set_pos(position(E, 1));
-    black_king->set_pos(position(E, 8));
+    white_king = std::make_shared<king>(colors::White, this);
+    black_king = std::make_shared<king>(colors::Black, this);        //set kings
+    white_king->set_pos(position(columns::E, 1));
+    black_king->set_pos(position(columns::E, 8));
 
-    rooks_black[0] = std::make_shared<rook>("bR", this);
-    rooks_black[1] = std::make_shared<rook>("bR", this);
-    rooks_black[0]->set_pos(position(A, 8));     //set black rooks
-    rooks_black[1]->set_pos(position(H, 8));
+    rooks_black[0] = std::make_shared<rook>(colors::Black, this);
+    rooks_black[1] = std::make_shared<rook>(colors::Black, this);
+    rooks_black[0]->set_pos(position(columns::A, 8));     //set black rooks
+    rooks_black[1]->set_pos(position(columns::H, 8));
 
-    rooks_white[0] = std::make_shared<rook>("wR", this);
-    rooks_white[1] = std::make_shared<rook>("wR", this);
-    rooks_white[0]->set_pos(position(A, 1));    //set white rooks
-    rooks_white[1]->set_pos(position(H, 1));
+    rooks_white[0] = std::make_shared<rook>(colors::White, this);
+    rooks_white[1] = std::make_shared<rook>(colors::White, this);
+    rooks_white[0]->set_pos(position(columns::A, 1));    //set white rooks
+    rooks_white[1]->set_pos(position(columns::H, 1));
 
-    knights_black[0] = std::make_shared<knight>("bN", this);
-    knights_black[1] = std::make_shared<knight>("bN", this);
-    knights_black[0]->set_pos(position(B, 8));   //set black knights
-    knights_black[1]->set_pos(position(G, 8));
+    knights_black[0] = std::make_shared<knight>(colors::Black, this);
+    knights_black[1] = std::make_shared<knight>(colors::Black, this);
+    knights_black[0]->set_pos(position(columns::B, 8));   //set black knights
+    knights_black[1]->set_pos(position(columns::G, 8));
 
-    knights_white[0] = std::make_shared<knight>("wN", this);
-    knights_white[1] = std::make_shared<knight>("wN", this);   //set white knights
-    knights_white[0]->set_pos(position(B, 1));
-    knights_white[1]->set_pos(position(G, 1));
+    knights_white[0] = std::make_shared<knight>(colors::White, this);
+    knights_white[1] = std::make_shared<knight>(colors::White, this);   //set white knights
+    knights_white[0]->set_pos(position(columns::B, 1));
+    knights_white[1]->set_pos(position(columns::G, 1));
 
-    bishops_black[0] = std::make_shared<bishop>("bB", this);
-    bishops_black[1] = std::make_shared<bishop>("bB", this);
-    bishops_black[0]->set_pos(position(C, 8));  //set black bishops
-    bishops_black[1]->set_pos(position(F, 8));
+    bishops_black[0] = std::make_shared<bishop>(colors::Black, this);
+    bishops_black[1] = std::make_shared<bishop>(colors::Black, this);
+    bishops_black[0]->set_pos(position(columns::C, 8));  //set black bishops
+    bishops_black[1]->set_pos(position(columns::F, 8));
 
-    bishops_white[0] = std::make_shared<bishop>("wB", this);
-    bishops_white[1] = std::make_shared<bishop>("wB", this);  //set white bishops
-    bishops_white[0]->set_pos(position(C, 1));
-    bishops_white[1]->set_pos(position(F, 1));
+    bishops_white[0] = std::make_shared<bishop>(colors::White, this);
+    bishops_white[1] = std::make_shared<bishop>(colors::White, this);  //set white bishops
+    bishops_white[0]->set_pos(position(columns::C, 1));
+    bishops_white[1]->set_pos(position(columns::F, 1));
 
 
-    queen_black = std::make_shared<queen>("bQ", this);
-    queen_black->set_pos(position(D, 8));
-    queen_white = std::make_shared<queen>("wQ", this);       //set queens
-    queen_white->set_pos(position(D, 1));
+    queen_black = std::make_shared<queen>(colors::Black, this);
+    queen_black->set_pos(position(columns::D, 8));
+    queen_white = std::make_shared<queen>(colors::White, this);       //set queens
+    queen_white->set_pos(position(columns::D, 1));
 
     stockfish_process = new QProcess(this);      //starting the process which will interract with a chess engine
     stockfish_process->start("stockfish_20090216_x64_modern");
@@ -179,8 +179,8 @@ void Board::create_possible_moves_signs(std::vector<position>& positions) {
         possible_moves_signs.back()->setFrameStyle(QFrame::Box);
         possible_moves_signs.back()->setLineWidth(3);
 
-        if (Game::Player_color == White) possible_moves_signs.back()->setGeometry((pos.column - 1) * square_size + 30, (8 - pos.row) * square_size, square_size, square_size);
-        else possible_moves_signs.back()->setGeometry((8 - pos.column) * square_size + 30, (pos.row - 1) * square_size, square_size, square_size);
+        if (Game::Player_color == colors::White) possible_moves_signs.back()->setGeometry((static_cast<int>(pos.column) - 1) * square_size + 30, (8 - pos.row) * square_size, square_size, square_size);
+        else possible_moves_signs.back()->setGeometry((8 - static_cast<int>(pos.column)) * square_size + 30, (pos.row - 1) * square_size, square_size, square_size);
 
         possible_moves_signs.back()->show();
     }
@@ -196,7 +196,7 @@ void Board::clear_possible_moves_signs() {
 
 //function to search the square with the king on the board
 square& Board::get_king(colors c) {
-    return find_some_figure([c](square& s) {return s._figure != EMPTY_SQUARE && s._figure->name() == King && s._figure->get_color() == c; });
+    return find_some_figure([c](square& s) {return s._figure != EMPTY_SQUARE && s._figure->name() == figure_type::King && s._figure->get_color() == c; });
 }
 
 //this function gives the current position to chess engine and get the best move from it
@@ -211,7 +211,7 @@ std::string Board::get_stockfish_best_move() {
     stockfish_process->write("go depth ");
     stockfish_process->waitForBytesWritten();
 
-    char hard = '0' + Game::hard_mode;  //how much moves chess will calculate
+    char hard = '0' + static_cast<char>(Game::hard_mode);  //how much moves chess will calculate
 
     std::string hard_str;
     hard_str.push_back(hard);
@@ -224,12 +224,13 @@ std::string Board::get_stockfish_best_move() {
     stockfish_result = stockfish_process->readAll().toStdString(); //read all engine input
 
     int pos = stockfish_result.find("bestmove"); //find the position of the move in the string
+    const int offset = QString("bestmove").size() + 1;
 
     //out << stockfish_result.data();
 
     std::string result;
     for (int i = 0; i < 5; ++i)
-        result.push_back(stockfish_result[pos + 9 + i]);
+        result.push_back(stockfish_result[pos + offset + i]);
 
     //    out << result.data() << "\n";
     return result;
@@ -271,47 +272,47 @@ void Board::figures_start_set() {
 
     /*set all figures positions*/
     Game::board[0][4] = { black_king,0,0 };
-    black_king->set_pos(position(E, 8));
+    black_king->set_pos(position(columns::E, 8));
 
     Game::board[7][4] = { white_king,0,0 };
-    white_king->set_pos(position(E, 1));
+    white_king->set_pos(position(columns::E, 1));
 
     Game::board[0][3] = { queen_black,0,0 };
     Game::board[7][3] = { queen_white,0,0 };
-    queen_black->set_pos(position(D, 8));
-    queen_white->set_pos(position(D, 1));
+    queen_black->set_pos(position(columns::D, 8));
+    queen_white->set_pos(position(columns::D, 1));
 
     Game::board[0][0] = { rooks_black[0],0,0 };
     Game::board[0][7] = { rooks_black[1],0,0 };
-    rooks_black[0]->set_pos(position(A, 8));
-    rooks_black[1]->set_pos(position(H, 8));
+    rooks_black[0]->set_pos(position(columns::A, 8));
+    rooks_black[1]->set_pos(position(columns::H, 8));
 
     Game::board[7][0] = { rooks_white[0],0,0 };
     Game::board[7][7] = { rooks_white[1],0,0 };
-    rooks_white[0]->set_pos(position(A, 1));
-    rooks_white[1]->set_pos(position(H, 1));
+    rooks_white[0]->set_pos(position(columns::A, 1));
+    rooks_white[1]->set_pos(position(columns::H, 1));
 
 
     Game::board[0][1] = { knights_black[0],0,0 };
     Game::board[0][6] = { knights_black[1],0,0 };
-    knights_black[0]->set_pos(position(B, 8));
-    knights_black[1]->set_pos(position(G, 8));
+    knights_black[0]->set_pos(position(columns::B, 8));
+    knights_black[1]->set_pos(position(columns::G, 8));
 
     Game::board[7][1] = { knights_white[0],0,0 };
     Game::board[7][6] = { knights_white[1],0,0 };
-    knights_white[0]->set_pos(position(B, 1));
-    knights_white[1]->set_pos(position(G, 1));
+    knights_white[0]->set_pos(position(columns::B, 1));
+    knights_white[1]->set_pos(position(columns::G, 1));
 
     Game::board[0][2] = { bishops_black[0],0,0 };
     Game::board[0][5] = { bishops_black[1],0,0 };
-    bishops_black[0]->set_pos(position(C, 8));
-    bishops_black[1]->set_pos(position(F, 8));
+    bishops_black[0]->set_pos(position(columns::C, 8));
+    bishops_black[1]->set_pos(position(columns::F, 8));
 
 
     Game::board[7][2] = { bishops_white[0],0,0 };
     Game::board[7][5] = { bishops_white[1],0,0 };
-    bishops_white[0]->set_pos(position(C, 1));
-    bishops_white[1]->set_pos(position(F, 1));
+    bishops_white[0]->set_pos(position(columns::C, 1));
+    bishops_white[1]->set_pos(position(columns::F, 1));
 
     for (int i = 0; i < 8; ++i) {
         Game::board[1][i] = { pieces_black[i],0,0 };
@@ -330,10 +331,10 @@ void Board::figures_start_set() {
     mark_all();
 
     //white begins
-    Game::now_move = White;
+    Game::now_move = colors::White;
 
     //if the first move is by chess engine
-    if (Game::Player_color == Black && Game::get_state() == STOCKFISH) {
+    if (Game::Player_color == colors::Black && Game::get_state() == state::STOCKFISH) {
         std::string move = get_stockfish_best_move();
         single_move move_struct = convert_stockfish_move_to_single_move(move);
         make_move(move_struct.get_from(), move_struct.get_where(), true, ' ');
@@ -373,7 +374,7 @@ void Board::draw() {
         if (i % 2 == 0) black = false;
         else black = true;
         for (int j = 0; j < 8; ++j) {
-            Game::board[i][j].square_color = (black) ? Black : White;
+            Game::board[i][j].square_color = (black) ? colors::Black : colors::White;
             qp.setBrush(QBrush(black ? Qt::gray : Qt::yellow));
             qp.drawRect(30 + j * square_size, i * square_size, square_size, square_size);
             black = !black;
@@ -381,13 +382,13 @@ void Board::draw() {
     }
 
     for (int i = 0; i < 8; ++i) {
-        int letters_x = Game::Player_color == White ? 50 + i * square_size : 50 + (7 - i) * square_size;
+        int letters_x = Game::Player_color == colors::White ? 50 + i * square_size : 50 + (7 - i) * square_size;
         int letters_y = square_size * 8;
         letters[i]->setGeometry(letters_x, letters_y, 30, 30);
         letters[i]->show();
 
         int digits_x = 20;
-        int digits_y = Game::Player_color == White ? i * square_size : (7 - i) * square_size;
+        int digits_y = Game::Player_color == colors::White ? i * square_size : (7 - i) * square_size;
         digits[i]->setGeometry(digits_x, digits_y, 30, 30);
         digits[i]->show();
     }
@@ -396,8 +397,8 @@ void Board::draw() {
     for (int i = 0; i < 8; ++i) {
         for (int j = 0; j < 8; ++j) {
             if (b[i][j]._figure != EMPTY_SQUARE) {
-                int figure_x = Game::Player_color == White ? j * square_size + 30 : (7 - j) * square_size + 30;
-                int figure_y = Game::Player_color == White ? i * square_size : (7 - i) * square_size;
+                int figure_x = Game::Player_color == colors::White ? j * square_size + 30 : (7 - j) * square_size + 30;
+                int figure_y = Game::Player_color == colors::White ? i * square_size : (7 - i) * square_size;
                 b[i][j]._figure->setGeometry(figure_x, figure_y, square_size, square_size);
                 b[i][j]._figure->show();
             }
@@ -431,13 +432,13 @@ bool Board::check_for_mate() {
     if (get_king(Game::now_move)._figure->possible_squares().size() != 0) { /*out << "check for mate end,returning false\n";*/ return false; }
 
     colors c = Game::now_move;
-    if (c == White && get_king(Game::now_move).attacking_black_figures == 0) { /*out << "check for mate end,returning false\n";*/ return false; }
-    if (c == Black && get_king(Game::now_move).attacking_white_figures == 0) { /*out << "check for mate end,returning false\n";*/return false; }
+    if (c == colors::White && get_king(Game::now_move).attacking_black_figures == 0) { /*out << "check for mate end,returning false\n";*/ return false; }
+    if (c == colors::Black && get_king(Game::now_move).attacking_white_figures == 0) { /*out << "check for mate end,returning false\n";*/return false; }
 
     for (int i = 0; i < 8; ++i) {
         for (int j = 0; j < 8; ++j) {
             if (Game::board[i][j]._figure != nullptr) {
-                if (Game::board[i][j]._figure->name() != King && Game::board[i][j]._figure->get_color() == Game::now_move) {
+                if (Game::board[i][j]._figure->name() != figure_type::King && Game::board[i][j]._figure->get_color() == Game::now_move) {
                     auto squares = Game::board[i][j]._figure->possible_squares();
                     position from = Game::board[i][j]._figure->get_pos();
                     for (auto release_pos : squares) {
@@ -452,24 +453,24 @@ bool Board::check_for_mate() {
                         figure* fig_by_pass{nullptr};
 
                         bool is_by_pass = false;
-                        if (Game::board[i][j]._figure->name() == Piece && from.row != release_pos.row && from.column != release_pos.column && at(release_pos)._figure == nullptr) { //taking by pass
+                        if (Game::board[i][j]._figure->name() == figure_type::Piece && from.row != release_pos.row && from.column != release_pos.column && at(release_pos)._figure == nullptr) { //taking by pass
                             is_by_pass = true;
-                            if (from.column != A && at(columns(from.column - 1), from.row)._figure == Board::last_move) { //check if piece to be taken is from left
-                                bool not_empty = (at(columns(from.column - 1), from.row)._figure != nullptr); //not empty square
-                                by_pass = position(columns(from.column - 1), from.row);
-                                if (not_empty && at(columns(from.column - 1), from.row)._figure == Board::last_move) {
-                                    fig_by_pass = at(columns(from.column - 1), from.row)._figure;
-                                    at(columns(from.column - 1), from.row)._figure->hide();
-                                    at(columns(from.column - 1), from.row)._figure = nullptr;
+                            if (from.column != columns::A && at(columns(static_cast<int>(from.column) - 1), from.row)._figure == Board::last_move) { //check if piece to be taken is from left
+                                bool not_empty = (at(columns(static_cast<int>(from.column) - 1), from.row)._figure != nullptr); //not empty square
+                                by_pass = position(columns(static_cast<int>(from.column) - 1), from.row);
+                                if (not_empty && at(columns(static_cast<int>(from.column) - 1), from.row)._figure == Board::last_move) {
+                                    fig_by_pass = at(columns(static_cast<int>(from.column) - 1), from.row)._figure;
+                                    at(columns(static_cast<int>(from.column) - 1), from.row)._figure->hide();
+                                    at(columns(static_cast<int>(from.column) - 1), from.row)._figure = nullptr;
                                 }
                             }
-                            if (from.column != H && at(columns(from.column + 1), from.row)._figure == Board::last_move) { //check if piece to be taken is from right
-                                bool not_empty = (Game::board[8 - from.row][from.column - 1 + 1]._figure != nullptr);
-                                by_pass = position(columns(from.column + 1), from.row);
+                            if (from.column != columns::H && at(columns(static_cast<int>(from.column) + 1), from.row)._figure == Board::last_move) { //check if piece to be taken is from right
+                                bool not_empty = (Game::board[8 - from.row][static_cast<int>(from.column) - 1 + 1]._figure != nullptr);
+                                by_pass = position(columns(static_cast<int>(from.column) + 1), from.row);
                                 if (not_empty) {
-                                    fig_by_pass = at(columns(from.column + 1), from.row)._figure;
-                                    at(columns(from.column + 1), from.row)._figure->hide();
-                                    at(columns(from.column + 1), from.row)._figure = nullptr;
+                                    fig_by_pass = at(columns(static_cast<int>(from.column) + 1), from.row)._figure;
+                                    at(columns(static_cast<int>(from.column) + 1), from.row)._figure->hide();
+                                    at(columns(static_cast<int>(from.column) + 1), from.row)._figure = nullptr;
                                 }
                             }
                         }
@@ -481,7 +482,7 @@ bool Board::check_for_mate() {
                         at(from)._figure = nullptr;
                         mark_all();
 
-                        if ((c == White && get_king(White).attacking_black_figures == 0) || (c == Black && get_king(Black).attacking_white_figures == 0)) {
+                        if ((c == colors::White && get_king(colors::White).attacking_black_figures == 0) || (c == colors::Black && get_king(colors::Black).attacking_white_figures == 0)) {
                             is_mate = false;
 
                         }
@@ -507,12 +508,12 @@ bool Board::check_for_mate() {
 
 //these two functions returns reference to square at given position
 square& at(position p) {
-    return Game::board[8 - p.row][p.column - 1];
+    return Game::board[8 - p.row][static_cast<int>(p.column) - 1];
     //return Game::board[p.row - 1][8 - p.c];
 }
 
 square& at(columns c, std::size_t row) {
-    return Game::board[8 - row][c - 1];
+    return Game::board[8 - row][static_cast<int>(c) - 1];
     //return Game::board[row - 1][8 - c];
 }
 
@@ -536,20 +537,20 @@ void Board::choose_figure_to_transform(position where) {
     figure_choose = new QWidget;
     QHBoxLayout* hb = new QHBoxLayout(figure_choose);
     QPushButton* queen = new QPushButton(figure_choose);
-    if (where.row == 8) queen->setIcon(QIcon("pics\\figures\\wQ.png"));
-    else queen->setIcon(QIcon("pics\\figures\\bQ.png"));
+    if (where.row == 8) queen->setIcon(QIcon(":\\pics\\figures\\wQ.png"));
+    else queen->setIcon(QIcon(":\\pics\\figures\\bQ.png"));
 
     QPushButton* rook = new QPushButton(figure_choose);
-    if (where.row == 8) rook->setIcon(QIcon("pics\\figures\\wR.png"));
-    else rook->setIcon(QIcon("pics\\figures\\bR.png"));
+    if (where.row == 8) rook->setIcon(QIcon(":\\pics\\figures\\wR.png"));
+    else rook->setIcon(QIcon(":\\pics\\figures\\bR.png"));
 
     QPushButton* bishop = new QPushButton(figure_choose);
-    if (where.row == 8) bishop->setIcon(QIcon("pics\\figures\\wB.png"));
-    else bishop->setIcon(QIcon("pics\\figures\\bB.png"));
+    if (where.row == 8) bishop->setIcon(QIcon(":\\pics\\figures\\wB.png"));
+    else bishop->setIcon(QIcon(":\\pics\\figures\\bB.png"));
 
     QPushButton* knight = new QPushButton(figure_choose);
-    if (where.row == 8) knight->setIcon(QIcon("pics\\figures\\wN.png"));
-    else knight->setIcon(QIcon("pics\\figures\\bN.png"));
+    if (where.row == 8) knight->setIcon(QIcon(":\\pics\\figures\\wN.png"));
+    else knight->setIcon(QIcon(":\\pics\\figures\\bN.png"));
 
     hb->setSpacing(5);
     hb->addWidget(queen);
@@ -568,10 +569,10 @@ void Board::choose_figure_to_transform(position where) {
 
     where_to_transform = where; //fix transform position
 
-    connect(queen, &QPushButton::clicked, this, [this]() {transform_figure = Queen; transform(); });
-    connect(rook, &QPushButton::clicked, this, [this]() {transform_figure = Rook; transform(); });
-    connect(bishop, &QPushButton::clicked, this, [this]() {transform_figure = Bishop; transform(); });
-    connect(knight, &QPushButton::clicked, this, [this]() {transform_figure = Knight; transform(); });
+    connect(queen, &QPushButton::clicked, this, [this]() {transform_figure = figure_type::Queen; transform(); });
+    connect(rook, &QPushButton::clicked, this, [this]() {transform_figure = figure_type::Rook; transform(); });
+    connect(bishop, &QPushButton::clicked, this, [this]() {transform_figure = figure_type::Bishop; transform(); });
+    connect(knight, &QPushButton::clicked, this, [this]() {transform_figure = figure_type::Knight; transform(); });
 
 }
 
@@ -593,21 +594,21 @@ void Board::transform() {
     at(where_to_transform)._figure = nullptr;  //hide piece
 
     switch (transform_figure) { //depends on player choose, set the new figure on the board
-    case Queen:
+    case figure_type::Queen:
         transform_figure_first_symbol = 'q';
-        odd_figures.push_back(std::make_shared<queen>((Game::now_move == White) ? "bQ.png" : "wQ.png", this));
+        odd_figures.push_back(std::make_shared<queen>(Game::now_move, this));
         break;
-    case Rook:
+    case figure_type::Rook:
         transform_figure_first_symbol = 'r';
-        odd_figures.push_back(std::make_shared<rook>((Game::now_move == White) ? "bR.png" : "wR.png", this));
+        odd_figures.push_back(std::make_shared<rook>(Game::now_move, this));
         break;
-    case Knight:
+    case figure_type::Knight:
         transform_figure_first_symbol = 'k';
-        odd_figures.push_back(std::make_shared<knight>((Game::now_move == White) ? "bN.png" : "wN.png", this));
+        odd_figures.push_back(std::make_shared<knight>(Game::now_move, this));
         break;
-    case Bishop:
+    case figure_type::Bishop:
         transform_figure_first_symbol = 'b';
-        odd_figures.push_back(std::make_shared<bishop>((Game::now_move == White) ? "bB.png" : "wB.png", this));
+        odd_figures.push_back(std::make_shared<bishop>(Game::now_move, this));
         break;
     default:
         break;
@@ -618,19 +619,19 @@ void Board::transform() {
     at(where_to_transform)._figure->set_pos(where_to_transform);
 
     //set geometry of the new figure
-    if (Game::Player_color == White) at(where_to_transform)._figure->setGeometry((where_to_transform.column - 1) * square_size, (8 - where_to_transform.row) * square_size, square_size, square_size);
-    else at(where_to_transform)._figure->setGeometry((8 - where_to_transform.column) * square_size, (where_to_transform.row - 1) * square_size, square_size, square_size);
+    if (Game::Player_color == colors::White) at(where_to_transform)._figure->setGeometry((static_cast<int>(where_to_transform.column) - 1) * square_size, (8 - where_to_transform.row) * square_size, square_size, square_size);
+    else at(where_to_transform)._figure->setGeometry((8 - static_cast<int>(where_to_transform.column)) * square_size, (where_to_transform.row - 1) * square_size, square_size, square_size);
 
     at(where_to_transform)._figure->show();
     mark_all();
 
     //check if there is mate or check after transformation
     bool is_mate = check_for_mate();
-    bool is_check = ((Game::now_move == Black) ? get_king(Game::now_move).attacking_white_figures : get_king(Game::now_move).attacking_black_figures) != 0;
+    bool is_check = ((Game::now_move == colors::Black) ? get_king(Game::now_move).attacking_white_figures : get_king(Game::now_move).attacking_black_figures) != 0;
 
     //thread for write move to file
     std::thread write_move_to_file([this, is_check, is_mate, transform_figure_first_symbol]() {
-        write_move(single_move(at(where_to_transform)._figure->name(), handled, where_to_transform, false), is_check, is_mate, Game::now_move == White, true, transform_figure_first_symbol);
+        write_move(single_move(at(where_to_transform)._figure->name(), handled, where_to_transform, false), is_check, is_mate, Game::now_move == colors::White, true, transform_figure_first_symbol);
         });
     write_move_to_file.detach();
 
@@ -656,8 +657,8 @@ void Board::mousePressEvent(QMouseEvent* e) {
     handled.row = 8 - (e->pos().y()) / get_square_size();
 
 
-    if (Game::Player_color == Black) {
-        handled.column = columns(8 - columns((e->pos().x() - 30) / get_square_size()));
+    if (Game::Player_color == colors::Black) {
+        handled.column = columns(8 - static_cast<int>(columns((e->pos().x() - 30) / get_square_size())));
         handled.row = (e->pos().y()) / get_square_size() + 1;
 
     }
@@ -697,24 +698,24 @@ void Board::make_move(position from, position release_pos, bool stockfish, char 
     //check if our move is taking by pass by piece
     position by_pass;
     figure* fig_by_pass = at(by_pass)._figure;
-    if (fig._figure->name() == Piece && from.row != release_pos.row && from.column != release_pos.column && at(release_pos)._figure == nullptr) { //taking by pass
-        if (from.column != A) { //check if piece to be taken is from left
-            bool not_empty = (at(columns(from.column - 1), from.row)._figure != EMPTY_SQUARE); //not empty square
-            by_pass = position(columns(from.column - 1), from.row);
-            if (not_empty && at(columns(from.column - 1), from.row)._figure == Board::last_move) { //then that is taking by pass
-                fig_by_pass = at(columns(from.column - 1), from.row)._figure;
-                at(columns(from.column - 1), from.row)._figure->hide();
-                at(columns(from.column - 1), from.row)._figure = EMPTY_SQUARE;
+    if (fig._figure->name() == figure_type::Piece && from.row != release_pos.row && from.column != release_pos.column && at(release_pos)._figure == nullptr) { //taking by pass
+        if (from.column != columns::A) { //check if piece to be taken is from left
+            bool not_empty = (at(columns(static_cast<int>(from.column) - 1), from.row)._figure != EMPTY_SQUARE); //not empty square
+            by_pass = position(columns(static_cast<int>(from.column) - 1), from.row);
+            if (not_empty && at(columns(static_cast<int>(from.column) - 1), from.row)._figure == Board::last_move) { //then that is taking by pass
+                fig_by_pass = at(columns(static_cast<int>(from.column) - 1), from.row)._figure;
+                at(columns(static_cast<int>(from.column) - 1), from.row)._figure->hide();
+                at(columns(static_cast<int>(from.column) - 1), from.row)._figure = EMPTY_SQUARE;
             }
         }
 
-        if (from.column != H && at(columns(from.column + 1), from.row)._figure == Board::last_move) { //check if piece to be taken is from right
-            bool not_empty = (at(columns(from.column + 1), from.row)._figure != EMPTY_SQUARE);
-            by_pass = position(columns(from.column + 1), from.row);
-            if (not_empty && at(columns(from.column + 1), from.row)._figure == Board::last_move) { //then that is taking by pass
-                fig_by_pass = at(columns(from.column + 1), from.row)._figure;
-                at(columns(from.column + 1), from.row)._figure->hide();
-                at(columns(from.column + 1), from.row)._figure = nullptr;
+        if (from.column != columns::H && at(columns(static_cast<int>(from.column) + 1), from.row)._figure == Board::last_move) { //check if piece to be taken is from right
+            bool not_empty = (at(columns(static_cast<int>(from.column) + 1), from.row)._figure != EMPTY_SQUARE);
+            by_pass = position(columns(static_cast<int>(from.column) + 1), from.row);
+            if (not_empty && at(columns(static_cast<int>(from.column) + 1), from.row)._figure == Board::last_move) { //then that is taking by pass
+                fig_by_pass = at(columns(static_cast<int>(from.column) + 1), from.row)._figure;
+                at(columns(static_cast<int>(from.column) + 1), from.row)._figure->hide();
+                at(columns(static_cast<int>(from.column) + 1), from.row)._figure = nullptr;
             }
         }
     }
@@ -725,34 +726,34 @@ void Board::make_move(position from, position release_pos, bool stockfish, char 
     figure* temp = at(release_pos)._figure;
 
     //check if the move is king castling
-    bool castling_short = (fig._figure->name() == King && release_pos.row == from.row && release_pos.column - from.column == 2);
-    bool castling_long = (fig._figure->name() == King && release_pos.row == from.row && release_pos.column - from.column == -2);
+    bool castling_short = (fig._figure->name() == figure_type::King && release_pos.row == from.row && static_cast<int>(release_pos.column) - static_cast<int>(from.column) == 2);
+    bool castling_long = (fig._figure->name() == figure_type::King && release_pos.row == from.row && static_cast<int>(release_pos.column) - static_cast<int>(from.column) == -2);
 
     if (at(release_pos)._figure != nullptr) at(release_pos)._figure->hide();
     at(release_pos)._figure = at(from)._figure;
     at(release_pos)._figure->set_pos(release_pos);
-    if (Game::Player_color == White) at(release_pos)._figure->setGeometry((release_pos.column - 1) * square_size, (8 - release_pos.row) * square_size + 30, square_size, square_size);
-    else at(release_pos)._figure->setGeometry((8 - release_pos.column + 1) * square_size, (release_pos.row - 1) * square_size, square_size, square_size);
+    if (Game::Player_color == colors::White) at(release_pos)._figure->setGeometry((static_cast<int>(release_pos.column) - 1) * square_size, (8 - release_pos.row) * square_size + 30, square_size, square_size);
+    else at(release_pos)._figure->setGeometry((8 - static_cast<int>(release_pos.column) + 1) * square_size, (release_pos.row - 1) * square_size, square_size, square_size);
     at(from)._figure = nullptr;
 
     //if the move is castling, then also move rook to needed position
     if (castling_short) {
 
-        auto rook = at(columns(release_pos.column + 1), release_pos.row);
+        auto rook = at(columns(static_cast<int>(release_pos.column) + 1), release_pos.row);
 
-        at(columns(release_pos.column + 1), release_pos.row)._figure->set_pos(position(columns(rook._figure->get_pos().column - 2), rook._figure->get_pos().row));
-        at(columns(release_pos.column - 1), release_pos.row)._figure = at(columns(release_pos.column + 1), release_pos.row)._figure;
-        at(columns(release_pos.column + 1), release_pos.row)._figure = nullptr;
-        if (Game::Player_color == White) at(columns(release_pos.column - 1), release_pos.row)._figure->setGeometry((release_pos.column - 1 - 1) * square_size, (8 - release_pos.row) * square_size + 30, square_size, square_size);
-        else at(columns(release_pos.column - 1), release_pos.row)._figure->setGeometry((8 - release_pos.column - 1 + 1) * square_size, (release_pos.row - 1) * square_size + 30, square_size, square_size);
+        at(columns(static_cast<int>(release_pos.column) + 1), release_pos.row)._figure->set_pos(position(columns(static_cast<int>(rook._figure->get_pos().column) - 2), rook._figure->get_pos().row));
+        at(columns(static_cast<int>(release_pos.column) - 1), release_pos.row)._figure = at(columns(static_cast<int>(release_pos.column) + 1), release_pos.row)._figure;
+        at(columns(static_cast<int>(release_pos.column) + 1), release_pos.row)._figure = nullptr;
+        if (Game::Player_color == colors::White) at(columns(static_cast<int>(release_pos.column) - 1), release_pos.row)._figure->setGeometry((static_cast<int>(release_pos.column) - 1 - 1) * square_size, (8 - release_pos.row) * square_size + 30, square_size, square_size);
+        else at(columns(static_cast<int>(release_pos.column) - 1), release_pos.row)._figure->setGeometry((8 - static_cast<int>(release_pos.column)) * square_size, (release_pos.row - 1) * square_size + 30, square_size, square_size);
     }
     if (castling_long) {
         //auto rook = at(columns(release_pos.c - 2),release_pos.row);
-        at(columns(release_pos.column - 2), release_pos.row)._figure->set_pos(position(columns(release_pos.column + 1), release_pos.row));
-        at(columns(release_pos.column + 1), release_pos.row)._figure = at(columns(release_pos.column - 2), release_pos.row)._figure;
-        at(columns(release_pos.column - 2), release_pos.row)._figure = nullptr;
-        if (Game::Player_color == White) at(columns(release_pos.column + 1), release_pos.row)._figure->setGeometry((release_pos.column + 1 - 1) * square_size, (8 - release_pos.row) * square_size, square_size, square_size);
-        else at(columns(release_pos.column + 1), release_pos.row)._figure->setGeometry((8 - release_pos.column + 1) * square_size, (release_pos.row - 1) * square_size, square_size, square_size);
+        at(columns(static_cast<int>(release_pos.column) - 2), release_pos.row)._figure->set_pos(position(columns(static_cast<int>(release_pos.column) + 1), release_pos.row));
+        at(columns(static_cast<int>(release_pos.column) + 1), release_pos.row)._figure = at(columns(static_cast<int>(release_pos.column) - 2), release_pos.row)._figure;
+        at(columns(static_cast<int>(release_pos.column) - 2), release_pos.row)._figure = nullptr;
+        if (Game::Player_color == colors::White) at(columns(static_cast<int>(release_pos.column) + 1), release_pos.row)._figure->setGeometry((static_cast<int>(release_pos.column) + 1 - 1) * square_size, (8 - release_pos.row) * square_size, square_size, square_size);
+        else at(columns(static_cast<int>(release_pos.column) + 1), release_pos.row)._figure->setGeometry((8 - static_cast<int>(release_pos.column) + 1) * square_size, (release_pos.row - 1) * square_size, square_size, square_size);
     }
     //set all attacking squares for all figures
     mark_all();
@@ -760,7 +761,7 @@ void Board::make_move(position from, position release_pos, bool stockfish, char 
     //check whether the king is attacked after the move, if he is, then return moving figures to the past position, and return from function
     colors c = Game::now_move;
 
-    if ((c == Black && get_king(Black).attacking_white_figures != 0) || (c == White && get_king(White).attacking_black_figures != 0)) {
+    if ((c == colors::Black && get_king(colors::Black).attacking_white_figures != 0) || (c == colors::White && get_king(colors::White).attacking_black_figures != 0)) {
 
         unmark_all();
         at(from)._figure = at(release_pos)._figure;
@@ -769,8 +770,8 @@ void Board::make_move(position from, position release_pos, bool stockfish, char 
         at(release_pos)._figure = temp;
         if (at(release_pos)._figure != nullptr) at(release_pos)._figure->show();
         at(from)._figure->set_pos(from);
-        if (Game::Player_color == White) at(from)._figure->setGeometry((from.column - 1) * square_size + 30, (8 - from.row) * square_size, square_size, square_size);
-        else at(from)._figure->setGeometry((8 - from.column) * square_size, (from.row - 1) * square_size + 30, square_size, square_size);
+        if (Game::Player_color == colors::White) at(from)._figure->setGeometry((static_cast<int>(from.column) - 1) * square_size + 30, (8 - from.row) * square_size, square_size, square_size);
+        else at(from)._figure->setGeometry((8 - static_cast<int>(from.column)) * square_size, (from.row - 1) * square_size + 30, square_size, square_size);
         mark_all();
 
         //        out << "king is attacked\n";
@@ -784,7 +785,7 @@ void Board::make_move(position from, position release_pos, bool stockfish, char 
 
 
 
-    bool piece_transformation = at(release_pos)._figure->name() == Piece && (release_pos.row == 8 || release_pos.row == 1);
+    bool piece_transformation = at(release_pos)._figure->name() == figure_type::Piece && (release_pos.row == 8 || release_pos.row == 1);
 
     if (piece_transformation) {
         if (stockfish == false) {
@@ -795,19 +796,19 @@ void Board::make_move(position from, position release_pos, bool stockfish, char 
             where_to_transform = release_pos;
             switch (transform_figure) {
             case 'q':
-                transform_figure = Queen;
+                transform_figure = static_cast<char>(figure_type::Queen);
                 transform();
                 break;
             case 'r':
-                transform_figure = Rook;
+                transform_figure = static_cast<char>(figure_type::Rook);
                 transform();
                 break;
             case 'n':
-                transform_figure = Knight;
+                transform_figure = static_cast<char>(figure_type::Knight);
                 transform();
                 break;
             case 'b':
-                transform_figure = Bishop;
+                transform_figure = static_cast<char>(figure_type::Bishop);
                 transform();
                 break;
             default:
@@ -816,7 +817,7 @@ void Board::make_move(position from, position release_pos, bool stockfish, char 
         }
     }
 
-    Game::now_move = (Game::now_move == White) ? Black : White;
+    Game::now_move = (Game::now_move == colors::White) ? colors::Black : colors::White;
 
     last_move = at(release_pos)._figure;
 
@@ -829,17 +830,17 @@ void Board::make_move(position from, position release_pos, bool stockfish, char 
 
 
 
-    bool is_check = ((Game::now_move == Black) ? get_king(Game::now_move).attacking_white_figures : get_king(Game::now_move).attacking_black_figures) != 0;
+    bool is_check = ((Game::now_move == colors::Black) ? get_king(Game::now_move).attacking_white_figures : get_king(Game::now_move).attacking_black_figures) != 0;
     if (is_check) dynamic_cast<king*>((get_king(Game::now_move)._figure))->set_checked();
 
     bool is_mate = check_for_mate();
 
-    if (Game::now_move == White) Game::count_move++;
+    if (Game::now_move == colors::White) Game::count_move++;
 
     if (!piece_transformation) {
         //launching independence thread, which will write last move to the file
         std::thread write_move_to_file([this, from, release_pos, taking, is_check, is_mate]() {
-            write_move(single_move(at(release_pos)._figure->name(), from, release_pos, taking), is_check, is_mate, Game::now_move == White, false);
+            write_move(single_move(at(release_pos)._figure->name(), from, release_pos, taking), is_check, is_mate, Game::now_move == colors::White, false);
             });
         write_move_to_file.detach();
     }
@@ -864,8 +865,8 @@ void Board::mouseReleaseEvent(QMouseEvent* e) {
     release_pos.column = columns((e->pos().x() - 30) / get_square_size() + 1);  //get release mouse position
     release_pos.row = 8 - (e->pos().y()) / get_square_size();
 
-    if (Game::Player_color == Black) {
-        release_pos.column = columns(8 - release_pos.column + 1);  //get release mouse position if player color is black
+    if (Game::Player_color == colors::Black) {
+        release_pos.column = columns(8 - static_cast<int>(release_pos.column) + 1);  //get release mouse position if player color is black
         release_pos.row = 8 - release_pos.row + 1;
     }
 
@@ -884,7 +885,7 @@ void Board::mouseReleaseEvent(QMouseEvent* e) {
     }
 
     //if we are here, then the move was correct, and now it's time to chess engine to move (if player do not play with himself)
-    if (Game::get_state() == STOCKFISH) {
+    if (Game::get_state() == state::STOCKFISH) {
         give_up->setEnabled(false);
         std::string stockfish_result = get_stockfish_best_move();
 
@@ -905,7 +906,7 @@ void Board::write_move(const single_move& s, bool is_check, bool is_mate, bool i
         QFile file_to_write(filename_to_write);
         file_to_write.open(QIODevice::Append);
         QTextStream out(&file_to_write);
-        if (Game::now_move == Black) out << Game::count_move << ". ";
+        if (Game::now_move == colors::Black) out << Game::count_move << ". ";
         out << string_move.data();
         file_to_write.close();
 
@@ -925,35 +926,35 @@ std::size_t Board::how_much_material_left() {
 //check if there is only light figures left
 bool Board::only_light_figures_left() {
     return check_some_board_condition([](square& s) {
-        return s._figure != EMPTY_SQUARE && s._figure->get_color() == Game::now_move && s._figure->get_weight() == HEAVY;
+        return s._figure != EMPTY_SQUARE && s._figure->get_color() == Game::now_move && s._figure->get_weight() == figure_weight::HEAVY;
         });
 }
 
 //check if there is only two bishops and king left
 bool Board::two_bishops() {
-    return check_some_board_condition([](square& s) {return s._figure != EMPTY_SQUARE && s._figure->get_color() == Game::now_move && s._figure->name() != Bishop && s._figure->name() != King; });
+    return check_some_board_condition([](square& s) {return s._figure != EMPTY_SQUARE && s._figure->get_color() == Game::now_move && s._figure->name() != figure_type::Bishop && s._figure->name() != figure_type::King; });
 }
 
 
 //check if the is only two kings left
 bool Board::only_two_kings() {
-    return check_some_board_condition([](square& s) {return s._figure != EMPTY_SQUARE && s._figure->name() != King; });
+    return check_some_board_condition([](square& s) {return s._figure != EMPTY_SQUARE && s._figure->name() != figure_type::King; });
 }
 
 //check if there is stalemate
 bool Board::stalemate() {
 
 
-    return check_some_board_condition([](square& s) {return s._figure != EMPTY_SQUARE && s._figure->name() == King && ((Game::now_move == Black || s.attacking_white_figures != 0) || (Game::now_move == White || s.attacking_black_figures != 0)); })
+    return check_some_board_condition([](square& s) {return s._figure != EMPTY_SQUARE && s._figure->name() == figure_type::King && ((Game::now_move == colors::Black || s.attacking_white_figures != 0) || (Game::now_move == colors::White || s.attacking_black_figures != 0)); })
         &&
-        check_some_board_condition([](square& s) {return s._figure != EMPTY_SQUARE && s._figure->name() != King && s._figure->get_color() == Game::now_move && s._figure->possible_squares().size() != 0; });
+        check_some_board_condition([](square& s) {return s._figure != EMPTY_SQUARE && s._figure->name() != figure_type::King && s._figure->get_color() == Game::now_move && s._figure->possible_squares().size() != 0; });
 
 }
 
 //check if there is no pieces
 bool Board::no_pieces() {
     return check_some_board_condition([](square& s) {
-        return (s._figure != EMPTY_SQUARE && s._figure->name() == Piece && s._figure->get_color() == Game::now_move);
+        return (s._figure != EMPTY_SQUARE && s._figure->name() == figure_type::Piece && s._figure->get_color() == Game::now_move);
         });
 }
 

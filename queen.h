@@ -6,7 +6,7 @@
 class queen : public figure
 {
 public:
-    queen(std::string text,QWidget *parent = nullptr,int cost = 9,figure_weight weight = HEAVY);
+    queen(colors color,QWidget *parent = nullptr,int cost = 9,figure_weight weight = figure_weight::HEAVY);
 
     figure_type name() override {return figure_type::Queen;};
     void touch_attacking_squares(int how) override;

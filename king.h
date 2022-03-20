@@ -9,7 +9,7 @@
 class king : public figure
 {
 public:
-    king(std::string text,QWidget *parent = nullptr,int cost = 0,figure_weight weight = HEAVY);
+    king(colors color,QWidget *parent = nullptr,int cost = 0,figure_weight weight = figure_weight::HEAVY);
     figure_type name() override {return figure_type::King;}
 
 

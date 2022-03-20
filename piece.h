@@ -8,7 +8,7 @@ class piece : public figure
 {
     Q_OBJECT
 public:
-    piece(std::string text,QWidget *parent = nullptr,int cost = 1,figure_weight weight = LIGHT);
+    piece(colors color,QWidget *parent = nullptr,int cost = 1,figure_weight weight = figure_weight::LIGHT);
 
     figure_type name() override {return figure_type::Piece;}
 

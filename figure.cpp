@@ -2,59 +2,58 @@
 #include "figure.h"
 #include <QTextStream>
 #include "game.h"
-figure::figure(std::string text,QWidget *parent,int cost,figure_weight fw) : QLabel(text.data(),parent),cost(cost),weight(fw)
+figure::figure(colors color,figure_type type,QWidget *parent,int cost,figure_weight fw) : QLabel(parent),c(color),cost(cost),weight(fw)
 {
-    c = (text[0] == 'w') ? White : Black;
     QPixmap pix;
 
     //set icon of the figure
-    switch (text[1]) {
-        case 'K':
-            if(text[0] == 'w') {
-                pix = QPixmap("pics/figures/wK.png");
+    switch (type) {
+        case figure_type::King:
+            if(c == colors::White) {
+                pix = QPixmap(":/pics/figures/wK.png");
             }
             else {
-                pix = QPixmap("pics/figures/bK.png");
+                pix = QPixmap(":/pics/figures/bK.png");
             }
             break;
-        case 'Q':
-            if(text[0] == 'w') {
-                pix = QPixmap("pics/figures/wQ.png");
+        case figure_type::Queen:
+            if(c == colors::White) {
+                pix = QPixmap(":/pics/figures/wQ.png");
             }
             else {
-                pix = QPixmap("pics/figures/bQ.png");
+                pix = QPixmap(":/pics/figures/bQ.png");
             }
             break;
-        case 'B':
-            if(text[0] == 'w') {
-                pix = QPixmap("pics/figures/wB.png");
+        case figure_type::Bishop:
+            if(c == colors::White) {
+                pix = QPixmap(":/pics/figures/wB.png");
             }
             else {
-                pix = QPixmap("pics/figures/bB.png");
+                pix = QPixmap(":/pics/figures/bB.png");
             }
             break;
-        case 'N':
-            if(text[0] == 'w') {
-                pix = QPixmap("pics/figures/wN.png");
+        case figure_type::Knight:
+            if(c == colors::White) {
+                pix = QPixmap(":/pics/figures/wN.png");
             }
             else {
-                pix = QPixmap("pics/figures/bN.png");
+                pix = QPixmap(":/pics/figures/bN.png");
             }
             break;
-        case 'R':
-            if(text[0] == 'w') {
-                pix = QPixmap("pics/figures/wR.png");
+        case figure_type::Rook:
+            if(c == colors::White) {
+                pix = QPixmap(":/pics/figures/wR.png");
             }
             else {
-                pix = QPixmap("pics/figures/bR.png");
+                pix = QPixmap(":/pics/figures/bR.png");
             }
             break;
-        case 'P':
-            if(text[0] == 'w') {
-                pix = QPixmap("pics/figures/wP.png");
+        case figure_type::Piece:
+            if(c == colors::White) {
+                pix = QPixmap(":/pics/figures/wP.png");
             }
             else {
-                pix = QPixmap("pics/figures/bP.png");
+                pix = QPixmap(":/pics/figures/bP.png");
             }
             break;
     }

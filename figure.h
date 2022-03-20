@@ -13,7 +13,7 @@
 
 //structure that handle position on the board
 struct position {
-    position(columns col = A,std::size_t r = 1) : column(col),row(r){}
+    position(columns col = columns::A,std::size_t r = 1) : column(col),row(r){}
     columns column;
     std::size_t row;
     bool operator == (position p) {
@@ -23,28 +23,28 @@ struct position {
         QTextStream out(stdout);
         //out << "printing func " << endl;
         switch(column) {
-            case A:
+            case columns::A:
                 out << "A";
                 break;
-            case B:
+            case columns::B:
                 out << "B";
                 break;
-            case C:
+            case columns::C:
                 out << "C";
             break;
-            case D:
+            case columns::D:
                 out << "D";
             break;
-            case E:
+            case columns::E:
                 out << "E";
             break;
-            case F:
+            case columns::F:
                 out << "F";
             break;
-            case G:
+            case columns::G:
                 out << "G";
             break;
-            case H:
+            case columns::H:
                 out << "H";
             break;
         }
@@ -55,28 +55,28 @@ struct position {
         std::string result;
 
         switch(column) {
-            case A:
+            case columns::A:
                 result.push_back('a');
                 break;
-            case B:
+            case columns::B:
                 result.push_back('b');
                 break;
-            case C:
+            case columns::C:
                 result.push_back('c');
             break;
-            case D:
+            case columns::D:
                 result.push_back('d');
             break;
-            case E:
+            case columns::E:
                 result.push_back('e');
             break;
-            case F:
+            case columns::F:
                 result.push_back('f');
             break;
-            case G:
+            case columns::G:
                 result.push_back('g');
             break;
-            case H:
+            case columns::H:
                 result.push_back('h');
             break;
         }
@@ -91,7 +91,7 @@ struct position {
 class figure : public QLabel
 {
 public:
-    figure(std::string text,QWidget *parent = nullptr,int cost = -1,figure_weight weight = LIGHT);
+    figure(colors color,figure_type type,QWidget *parent = nullptr,int cost = -1,figure_weight weight = figure_weight::LIGHT);
 
     virtual figure_type name() = 0;
 
